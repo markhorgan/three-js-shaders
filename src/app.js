@@ -15,7 +15,7 @@ import fragmentShader from './shader.frag';
 class App {
   constructor() {
     this.camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    this.camera.position.set(0, 0, 5);
+    this.setCameraPosition();
     this.scene = new Scene();
     this.scene.background = null;
     this.renderer = new WebGLRenderer({
@@ -27,7 +27,9 @@ class App {
     document.body.appendChild(this.renderer.domElement);
 
     this.createScene();
-    this.createGui();
+    if (this.showGui) {
+      this.createGui();
+    }
 
     window.addEventListener('resize', this.onWindowResize.bind(this), false);
     this.renderer.setAnimationLoop(this.render.bind(this));
@@ -40,11 +42,11 @@ class App {
       uniforms: {
         uTime: { value: 0 },
 
-        uTimeScaleVert: { value: 0.02 },
+        uTimeScaleVert: { value: 0.01 },
         uNoiseScaleVert: { value: 1 },
-        uDisplacementScale: { value: 0.5 },
+        uDisplacementScale: { value: 0.3 },
 
-        uTimeScaleFrag: { value: 0.02 },
+        uTimeScaleFrag: { value: 0.01 },
         uNoiseScaleRed: { value: 0.8 },
         uNoiseScaleGreen: { value: 0.8 },
         uNoiseScaleBlue: { value: 0.8 }
@@ -58,23 +60,33 @@ class App {
 
   createGui() {
     const uniforms = this.material.uniforms;
-    const gui = new dat.GUI();
 
-    const vertexFolder = gui.addFolder('Vertex Shader');
-    vertexFolder.open();
-    vertexFolder.add(uniforms.uTimeScaleVert, 'value', 0, 0.1, 0.001).name('Speed');
-    vertexFolder.add(uniforms.uNoiseScaleVert, 'value', 0, 2, 0.01).name('Noise scale');
-    vertexFolder.add(uniforms.uDisplacementScale, 'value', 0, 1.2, 0.1).name('Displacement scale');
+    if (!this.gui) {
+      this.gui = new dat.GUI();
 
-    const fragmentFolder = gui.addFolder('Fragment Shader');
-    fragmentFolder.open();
-    fragmentFolder.add(uniforms.uTimeScaleFrag, 'value', 0, 0.1, 0.001).name('Speed');
+      const vertexFolder = this.gui.addFolder('Vertex Shader');
+      vertexFolder.open();
+      vertexFolder.add(uniforms.uTimeScaleVert, 'value', 0, 0.1, 0.001).name('Speed');
+      vertexFolder.add(uniforms.uNoiseScaleVert, 'value', 0, 2, 0.01).name('Noise scale');
+      vertexFolder.add(uniforms.uDisplacementScale, 'value', 0, 1.2, 0.1).name('Displacement scale');
+  
+      const fragmentFolder = this.gui.addFolder('Fragment Shader');
+      fragmentFolder.open();
+      fragmentFolder.add(uniforms.uTimeScaleFrag, 'value', 0, 0.1, 0.001).name('Speed');
+  
+      const noiseScaleFolder = fragmentFolder.addFolder('Noise scale');
+      noiseScaleFolder.open();
+      noiseScaleFolder.add(uniforms.uNoiseScaleRed, 'value', 0, 2, 0.01).name('Red');
+      noiseScaleFolder.add(uniforms.uNoiseScaleGreen, 'value', 0, 2, 0.01).name('Green');
+      noiseScaleFolder.add(uniforms.uNoiseScaleBlue, 'value', 0, 2, 0.01).name('Blue');
+    }
+  }
 
-    const noiseScaleFolder = fragmentFolder.addFolder('Noise scale');
-    noiseScaleFolder.open();
-    noiseScaleFolder.add(uniforms.uNoiseScaleRed, 'value', 0, 2, 0.01).name('Red');
-    noiseScaleFolder.add(uniforms.uNoiseScaleGreen, 'value', 0, 2, 0.01).name('Green');
-    noiseScaleFolder.add(uniforms.uNoiseScaleBlue, 'value', 0, 2, 0.01).name('Blue');
+  removeGui() {
+    if (this.gui) {
+      this.gui.destroy();
+      this.gui = null;
+    }
   }
 
   render() {
@@ -85,8 +97,23 @@ class App {
   onWindowResize() {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
+    this.setCameraPosition();
+    if (this.showGui) {
+      this.createGui();
+    } else {
+      this.removeGui();
+    }
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.render(this.scene, this.camera); 
+  }
+
+  get showGui() {
+    return parseInt(window.innerWidth) >= 650;
+  }
+
+  setCameraPosition() {
+    const x = this.showGui && parseInt(window.innerWidth) < 750 ? 2 : 0;
+    this.camera.position.set(x, 0, 5);
   }
 }
 
