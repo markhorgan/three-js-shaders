@@ -1,0 +1,20 @@
+{
+  "name": "three-js-shader",
+  "version": "1.0.0",
+  "description": "An example of shaders using Three.js",
+  "scripts": {
+    "dev": "parcel src/index.html",
+    "build": "parcel build --public-url '.' src/index.html"
+  },
+  "author": "Mark Horgan",
+  "license": "ISC",
+  "dependencies": {
+    "dat.gui": "^0.7.7",
+    "three": "^0.135.0"
+  },
+  "devDependencies": {
+    "@parcel/transformer-glsl": "^2.0.1",
+    "parcel": "^2.0.1",
+    "glsl-noise": "0.0.0"
+  }
+}
