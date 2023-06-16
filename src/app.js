@@ -68,7 +68,7 @@ class App {
       vertexFolder.open();
       vertexFolder.add(uniforms.uTimeScaleVert, 'value', 0, 0.1, 0.001).name('Speed');
       vertexFolder.add(uniforms.uNoiseScaleVert, 'value', 0, 2, 0.01).name('Noise scale');
-      vertexFolder.add(uniforms.uDisplacementScale, 'value', 0, 1.2, 0.1).name('Displacement scale');
+      vertexFolder.add(uniforms.uDisplacementScale, 'value', 0, 1.2, 0.01).name('Displacement scale');
   
       const fragmentFolder = this.gui.addFolder('Fragment Shader');
       fragmentFolder.open();
